@@ -66,3 +66,20 @@ where P.OUTDATE is null
 group by s.POSITION
 having s.POSITION='PLANLAMA ŞEFİ'
 order by s.POSITION
+
+--soru 6) her bir pozisyonda mevcut çalışan sayısı ve ort maaşları
+select s.POSITION, 
+count(p.ıd) as PersonCount,
+ROUND(AVG(p.SALARY),0) as AvgSalary
+from PERSON P
+inner join POSITION S on S.ID=P.POSITIONID
+where P.OUTDATE is null
+group by s.POSITION
+order by s.POSITION
+
+--soru 7) yıllara göre işe alınan pers sayısını kadın erkek bazında listele
+select DISTINCT YEAR(P.INDATE)  year_,
+(select COUNT(*) from PERSON where  GENDER='E' and YEAR(INDATE)=YEAR(p.INDATE) ) AS ErkekÇaşılan,
+(select COUNT(*) from PERSON where  GENDER='K' and YEAR(INDATE)=YEAR(p.INDATE) ) AS KadınÇaşılan
+from PERSON P
+order by year_
