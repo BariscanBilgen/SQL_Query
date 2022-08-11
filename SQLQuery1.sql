@@ -1,3 +1,5 @@
+------------------------------------------------------SQL SORGULAR-------------------------------------------------------------------------------------------
+
 --soru 1) ID ile beraber veri eklemek
 select * from CITIES
 delete from CITIES where ID=6
