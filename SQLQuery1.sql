@@ -2,16 +2,16 @@
 select * from CITIES
 delete from CITIES where ID=6
 set IDENTITY_INSERT CITIES ON
-insert into CITIES (ID,CITY) VALUES (6, ‘ANKARA’)
+insert into CITIES (ID,CITY) VALUES (6, â€˜ANKARAâ€™)
 
---soru 2)kim hangi operatörü kullanýyor / kaç kiþi kullanýyor 
+--soru 2)kim hangi operatÃ¶rÃ¼ kullanÃ½yor / kaÃ§ kiÃ¾i kullanÃ½yor 
 select CUSTOMERNAME, TELNR1, TELNR2,
 TELNR1_XOPERATORCOUNT+TELNR2_XOPERATORCOUNT as XOPERATORCOUNT,
 TELNR1_YOPERATORCOUNT+TELNR2_YOPERATORCOUNT as YOPERATORCOUNT,
 TELNR1_ZOPERATORCOUNT+TELNR2_ZOPERATORCOUNT as ZOPERATORCOUNT
 from(
 select
---TELNR1 için
+--TELNR1 iÃ§in
 case
 when TELNR1 like '(50%' or TELNR1 like '(55%' then 1
 else 0
@@ -24,7 +24,7 @@ case
 when TELNR1 like '(53%' then 1
 else 0
 END as TELNR1_ZOPERATORCOUNT,
---TELNR2 için
+--TELNR2 iÃ§in
 case
 when TELNR2 like '(50%' or TELNR2 like '(55%' then 1
 else 0
@@ -41,7 +41,7 @@ END as TELNR2_ZOPERATORCOUNT,
 from CUSTOMERS
 ) T
 
---soru 3) Her ilde en çok müþteriye sahip ilçeleri m. sayýsýna göre çoktan aza sýrala
+--soru 3) Her ilde en Ã§ok mÃ¼Ã¾teriye sahip ilÃ§eleri mÃ¼ÅŸteri sayÄ±sÄ±na gÃ¶re Ã§oktan aza sÄ±rala
 select ct.CITY,d.DISTRICT,COUNT(c.ID) as customercount
 from CUSTOMERS c
 inner join CITIES ct on ct.ID=c.CITYID
@@ -49,8 +49,20 @@ inner join DISTRICTS d on d.ID=c.DISTRICTID
 group by ct.CITY, d.DISTRICT
 order by ct.CITY, COUNT(c.ID) desc
 
---soru 4)Ýstenilen dil ile veri getirmek ve doðumgünü getirmek 
+--soru 4)Ä°stenilen dil ile veri getirmek ve doÃ°umgÃ¼nÃ¼ getirmek 
 set language Norwegian
 select
-customername,DATENAME(DW, BIRTHDATE) as DogumGünü,BIRTHDATE,
+customername,DATENAME(DW, BIRTHDATE) as DogumGÃ¼nÃ¼,BIRTHDATE,
 * from CUSTOMERS
+
+--soru 5) ÅŸef atamasÄ± yapÄ±ldÄ±. maaÅŸ belirlencek. departman iÃ§im min max ort ÅŸef maaÅŸÄ± getir.
+select s.POSITION, 
+MIN(p.SALARY) AS minsalary, 
+MAX(p.SALARY) as maxsalary, 
+AVG(p.SALARY) as avgsalary
+from PERSON P
+inner join POSITION S on S.ID=P.POSITIONID
+where P.OUTDATE is null
+group by s.POSITION
+having s.POSITION='PLANLAMA ÅžEFÄ°'
+order by s.POSITION
