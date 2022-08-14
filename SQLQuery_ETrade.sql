@@ -5,7 +5,7 @@
 -- 100.000+ Fatura
 -- 10.000   Musteri
 
--- Soru 1) ordersales tablsou �zerinde hangi sehirde ne kdarlik satis yapildi biligisini getir.
+-- Soru 1) ordersales tablsou üzerinde hangi sehirde ne kdarlik satis yapildi biligisini getir.
 select CITY, SUM(LINETOTAL) AS TOTALSALE
 from SALEORDERS
 Group By CITY
@@ -31,7 +31,7 @@ Select
 DISTINCT CITY,
 (Select SUM(LINETOTAL) from SALEORDERS where CITY = s.CITY and DAYOFWEEK_='01.PZT') AS PAZARTESI,
 (Select SUM(LINETOTAL) from SALEORDERS where CITY = s.CITY and DAYOFWEEK_='02.SAL') AS SALI,
-(Select SUM(LINETOTAL) from SALEORDERS where CITY = s.CITY and DAYOFWEEK_='03.�AR') AS CARSAMBA,
+(Select SUM(LINETOTAL) from SALEORDERS where CITY = s.CITY and DAYOFWEEK_='03.ÇAR') AS CARSAMBA,
 (Select SUM(LINETOTAL) from SALEORDERS where CITY = s.CITY and DAYOFWEEK_='04.PER') AS PERSEMBE,
 (Select SUM(LINETOTAL) from SALEORDERS where CITY = s.CITY and DAYOFWEEK_='05.CUM') AS CUMA,
 (Select SUM(LINETOTAL) from SALEORDERS where CITY = s.CITY and DAYOFWEEK_='06.CMT') AS CUMARTESI,
@@ -55,3 +55,23 @@ CROSS APPLY (SELECT TOP 3 CATEGORY1, SUM(LINETOTAL)AS TOTALSALE from SALEORDERS 
 CROSS APPLY (SELECT TOP 3 CATEGORY2, SUM(LINETOTAL)AS TOTALSALE from SALEORDERS where CITY=s.CITY AND CATEGORY1=s1.CATEGORY1 Group By CATEGORY2 Order By 2 DESC) s2
 Group By s.CITY, s1.CATEGORY1,s2.CATEGORY2
 Order By 1, 2, 4 DESC
+
+-- iliskisel DB sorgulama
+set language turkish
+
+select od.ıd, u.USERNAME_, u.NAMESURNAME, u.TELNR1, u.TELNR2, 
+coun.COUNTRY, cit.CITY, tw.TOWN, ad.ADDRESSTEXT,
+o.ID as ORDERID, 
+itm.ITEMCODE, itm.ITEMNAME, itm.BRAND, itm.CATEGORY1, itm.CATEGORY2, itm.CATEGORY3, itm.CATEGORY4, 
+od.AMOUNT, od.UNITPRICE, od.LINETOTAL, convert(date, o.date_) AS orderdate, convert(time, o.DATE_) AS ordertime, 
+YEAR(o.DATE_), DATENAME(MONTH,o.DATE_) AS month_, DATENAME(DW, o.DATE_) AS dayofweek_
+from ORDERS o
+inner join USERS u on u.ıd = o.USERID
+inner join ADDRESS ad on ad.ID = o.ADDRESSID
+inner join COUNTRIES coun on coun.ID = ad.COUNTRYID
+inner join CITIES cit on cit.ID = ad.CITYID
+inner join TOWNS tw on tw.ID  = cit.ID
+inner join ORDERDETAILS od on od.ID = o.ID
+inner join ITEMS itm on itm.ID = od.ITEMID
+
+select * from SALEORDERS -- baz alinan tablo
