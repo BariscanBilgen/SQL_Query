@@ -113,3 +113,17 @@ select *,
 	)
 )
 from CITIES ct
+
+-- Soru 9) her markanin ana katagoriye gore en cok satan category1 alanini sekildeki gibi getir.
+select ı.BRAND, ı.CATEGORY1, SUM(o.LINETOTAL) AS TotalPrice
+from ITEMS ı
+inner join ORDERDETAILS o on o.ITEMID = ı.ID
+group by ı.BRAND, ı.CATEGORY1
+order by BRAND, TotalPrice DESC
+
+-- Soru 10) Her kategorinin icersinde en cok satan markayi getir.
+select ı.CATEGORY1,ı.BRAND, SUM(o.LINETOTAL) AS TotalPrice
+from ITEMS ı
+inner join ORDERDETAILS o on o.ITEMID = ı.ID
+group by  ı.CATEGORY1,BRAND
+order by  TotalPrice DESC, ı.CATEGORY1
