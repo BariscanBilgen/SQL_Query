@@ -127,3 +127,52 @@ from ITEMS ı
 inner join ORDERDETAILS o on o.ITEMID = ı.ID
 group by  ı.CATEGORY1,BRAND
 order by  TotalPrice DESC, ı.CATEGORY1
+
+-- Soru 11) her bir urun zaman icinde farkli fiyatlar ile satilmaktadir. her urunun min, max ve ort ne kadar fiyattan 
+-- satildigi bilgisi ile kac kez ve kaz adet satildigini bilgisini getir
+select 
+ı.BRAND, ı.CATEGORY1, ı.ITEMCODE, ı.ITEMNAME,
+COUNT(o.ID) AS SaleCount, SUM(o.AMOUNT) AS TotalAmount, 
+MIN(o.UNITPRICE) AS MinPrice, MAX(o.UNITPRICE) MaxPrice,
+AVG(o.UNITPRICE) AS AvgPrice
+from ITEMS ı
+inner join ORDERDETAILS o on o.ITEMID = ı.ID
+Group By ı.BRAND, ı.CATEGORY1, ı.ITEMCODE, ı.ITEMNAME
+Order By ı.BRAND
+
+-- Soru 12) musterinin sistemde kayitli adres sayisini ve son alisveris yaptigi adres bilgisni getir.
+select u.ID, u.NAMESURNAME,
+(select COUNT(*) from ADDRESS where USERID = u.ID )as addresscount,
+(
+select ADDRESSTEXT from ADDRESS where ID IN
+	(select top 1 ADDRESSID from ORDERS where USERID=u.ID order by DATE_ DESC)
+) LastShoppingAdres
+from USERS u 
+
+-- Soru 13) musterinin sistemde kayitli adres sayisini ve son alisveris yaptigi adres bilgisni  şshir, ilce ve semti ile getir
+select tmp.NAMESURNAME, tmp.addresscount, a.ADDRESSTEXT, c.CITY, t.TOWN, d.DISTRICT from
+(
+select u.ID, u.NAMESURNAME,
+(select COUNT(*) from ADDRESS where USERID = u.ID )as addresscount,
+(select top 1 ADDRESSID from ORDERS where USERID=u.ID order by DATE_ DESC)LastAdresıd
+from USERS u 
+) tmp
+inner join ADDRESS a on a.ID=tmp.LastAdresıd
+inner join CITIES c on c.ID=a.CITYID
+inner join TOWNS t on t.ID=a.TOWNID
+inner join DISTRICTS d on d.ID=a.DISTRICTID
+
+-- Soru 14) ocak ayi icersinde en az 10 gun botunca gunluk 500 tl ve altinda siparis veren sehirleri listele
+select CITY, COUNT(*) 
+from(
+select c.CITY, CONVERT(date,o.DATE_)AS DATE_,
+sum(o.TOTALPRICE) as totalprice
+from ORDERS o 
+inner join ADDRESS a on a.ID = o.ADDRESSID
+inner join CITIES c on c.ID = a.CITYID
+where o.DATE_ between '20190101' and '2019-01-31 23:59:59'
+group by c.CITY, CONVERT(date,o.DATE_)
+having SUM(o.TOTALPRICE)<200
+) tmp
+group by CITY
+having count(CITY)>=10
